@@ -1,0 +1,10 @@
+#ifndef _COMMONMESSAGEPROCESSOR_H
+#define _COMMONMESSAGEPROCESSOR_H
+
+
+class MessageProcessor {
+
+};
+
+
+#endif //_COMMONMESSAGEPROCESSOR_H
