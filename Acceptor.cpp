@@ -15,9 +15,11 @@ void Acceptor::acceptClients(Socket& skt) {
     if (peer_skt.getFd() != -1) {
         //agarrar numero secreto correcto de la lista. pAra eso voya  tener q tener una variable cantClientes
         //add client to list
-        Messenger client(std::move(peer_skt), secret_nums[0]);
-        client.run();
-        //start communication with client thread
+
+        Messenger messenger(std::move(peer_skt), secret_nums[0]);
+
+        messenger.run();
+        //start communication with messenger thread
         //iterate list and remove finished clients
     }
 

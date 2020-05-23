@@ -10,6 +10,7 @@ class Acceptor {
 private:
     Socket peer_skt;
     std::vector<int> secret_nums;
+    //int total_clients;
     //std::vector<Messenger*> clients; capaz va Thread*
 public:
     explicit Acceptor(std::vector<int>&& secret_nums);

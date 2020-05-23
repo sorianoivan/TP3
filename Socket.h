@@ -24,7 +24,8 @@ public:
     Socket& operator=(Socket&& skt) noexcept;
 
     void setUpConnection(const char* port);//server
-    //void setUpConnection(const std::string port) hacer la del cliente con polimorfismo
+    void setUpConnection(const char *host, const char *port);//client
+    //void setUpConnection(const char *host, const char *port);
     Socket accept();
     int getFd() const;
     int receive(void* msg, int len) const;
@@ -33,9 +34,12 @@ public:
     ~Socket();
 private:
     explicit Socket(int fd);
-    void _setAddrInfo(struct addrinfo** results, const char* port);//server
-    //void _setAddrInfo(struct addrinfo** results, const char* port);hacer la del cliente con polimorfismo
+    void _setAddrInfo(struct addrinfo** results, const char* port);
+    /*void _setAddrInfo(struct addrinfo** results, const char* host,
+                      const char* port, const char* mode);*/
+
     void _bind(addrinfo *results, int &skt);
+    void _setAddrInfo(addrinfo **results, const char *host, const char *port);
 
 
 };

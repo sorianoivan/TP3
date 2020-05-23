@@ -20,16 +20,32 @@ void Socket::_setAddrInfo(struct addrinfo** results, const char* port) {//server
     }
 }
 
+void Socket::_setAddrInfo(struct addrinfo** results,const char* host, const char* port) {//server
+    struct addrinfo hints;
+    int flag;
+
+    std::memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+
+    hints.ai_flags = 0;
+
+    flag = getaddrinfo(host, port, &hints, results);
+    if (flag != 0){
+        throw SocketException(gai_strerror(flag));
+    }
+}
+
 void Socket::_bind(struct addrinfo* results, int& skt) {
     struct addrinfo* current_result;
     bool connected = false;
 
     for (current_result = results; current_result != NULL
                                    && !connected;
-                                   current_result = current_result->ai_next) {
+         current_result = current_result->ai_next) {
         skt = socket(current_result->ai_family,
-                      current_result->ai_socktype,
-                      current_result->ai_protocol);
+                     current_result->ai_socktype,
+                     current_result->ai_protocol);
         if (skt == -1) throw SocketException(strerror(errno));
         int val = 1;
         if (setsockopt(skt, SOL_SOCKET, SO_REUSEADDR,
@@ -52,6 +68,34 @@ void Socket::setUpConnection(const char* port) {//server
     _setAddrInfo(&results, port);
 
     _bind(results, this->fd);
+}
+
+void _connect(struct addrinfo* results, int& skt) {
+    struct addrinfo* current_result;
+    bool connected = false;
+
+    for (current_result = results; current_result != NULL
+                                   && !connected; current_result = current_result->ai_next) {
+        skt = socket(current_result->ai_family,
+                      current_result->ai_socktype, current_result->ai_protocol);
+        if (skt == -1) throw SocketException(strerror(errno));
+        if (connect(skt, current_result->ai_addr,
+                    current_result->ai_addrlen) == -1) {
+            throw SocketException(strerror(errno));//hacer freeaddrinfo antes de tirar exception
+        } else {
+            connected = true;
+        }
+    }
+    freeaddrinfo(results);
+}
+
+void Socket::setUpConnection(const char* host, const char* port){//client
+    struct addrinfo *results;
+    memset(&results, 0, sizeof(struct addrinfo*));
+
+    _setAddrInfo(&results, host, port);
+
+    _connect(results, this->fd);
 }
 
 Socket::Socket(int fd) {

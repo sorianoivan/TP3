@@ -21,4 +21,6 @@ bool Verifier::verifyRepeat(std::string num) {
 
 }
 
+
+
 Verifier::~Verifier() {}
