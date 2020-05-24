@@ -14,9 +14,29 @@ void Server::run(const char* port, std::string numbers) {//uso char* por el geta
     if (listen(bind_skt.getFd(), 10) == -1)
         throw SocketException("Error listen");
 
-    Acceptor acceptor(std::move(secret_nums));
-    acceptor.acceptClients(bind_skt);
+    //Acceptor acceptor(std::move(secret_nums));
+    //acceptor.acceptClients(bind_skt);
+    std::thread th(&Server::getChar, this);
+    //while (!doneAccepting()){
+        acceptClients();
+    //}
+    for (auto & client : clients){
+        client->join();
+    }
+    th.join();
 
+}
+
+void Server::acceptClients() {
+    int i = 0;
+    while (!doneAccepting()) {
+        Socket peer_skt = bind_skt.accept();
+        if (peer_skt.getFd() != -1) {
+            clients.push_back(new Messenger(std::move(peer_skt), secret_nums[0]));
+            clients[i]->start();
+            i++;
+        }
+    }
 }
 
 

@@ -3,10 +3,11 @@
 
 #include "common_socket.h"
 #include "common_verifier.h"
+#include "server_thread.h"
 #include <string>
 #include <sstream>
 
-class Messenger {// va a heredar de thread
+class Messenger : public Thread {
 private:
     Socket peer;
     Verifier verifier;
@@ -14,7 +15,7 @@ private:
     bool client_done;
 public:
     Messenger(Socket&& peer, int num);
-    void run();//capaz conviene hacerla bool: true si gano false si perdio
+    void run() override;
     ~Messenger();
 
 private:

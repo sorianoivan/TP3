@@ -17,6 +17,7 @@ class Server {
 private:
     Socket bind_skt;
     std::vector<int> secret_nums;
+    std::vector<Thread*> clients;
     std::atomic<bool> done_accepting;
 public:
     Server();
@@ -26,6 +27,7 @@ public:
     ~Server();
 
 private:
+    void acceptClients();
 };
 
 
