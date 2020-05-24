@@ -10,7 +10,7 @@
 #include "common_socket_exception.h"
 #include "server_file_reader.h"
 #include "common_socket.h"
-#include "server_acceptor.h"
+#include "server_messenger.h"
 #include <atomic>
 
 class Server {
@@ -22,9 +22,11 @@ private:
 
     int total_clients;
     int clients_removed;
+    std::atomic<int> winners;
+    //std::atomic<int> losers;
 public:
     Server();
-    void run(const char* port, std::string numbers);
+    void run(const char* port, std::string numbers);//hacerla con el operator()
 
     ~Server();
 
@@ -32,8 +34,6 @@ private:
     void getChar();
     bool doneAccepting();
     void acceptClients();
-    //bool isClientDone(Thread *client);
-
 };
 
 

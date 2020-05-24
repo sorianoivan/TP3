@@ -1,5 +1,7 @@
 #include "server_file_exception.h"
 
+#include <utility>
+
 FileException::FileException(std::string&& error) {
     this->error = std::move(error);
 }

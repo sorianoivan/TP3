@@ -1,4 +1,5 @@
 #include "common_command_exception.h"
+#include <utility>
 
 CommandException::CommandException(std::string &&error) {
     this->error = std::move(error);

@@ -3,7 +3,7 @@
 
 int main(int argc, char* argv[]) {
     if (argc != 3){
-        std::cerr << "Argumentos invalidos" << std::endl;
+        std::cerr << "Error: argumentos invalidos." << std::endl;
         return 1;
     }
     try{

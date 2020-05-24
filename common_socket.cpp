@@ -20,7 +20,8 @@ void Socket::_setAddrInfo(struct addrinfo** results, const char* port) {//server
     }
 }
 
-void Socket::_setAddrInfo(struct addrinfo** results,const char* host, const char* port) {//server
+void Socket::_setAddrInfo(struct addrinfo** results,const char* host,
+        const char* port) {//server
     struct addrinfo hints;
     int flag;
 
@@ -81,9 +82,11 @@ void _connect(struct addrinfo* results, int& skt) {
     bool connected = false;
 
     for (current_result = results; current_result != NULL
-                                   && !connected; current_result = current_result->ai_next) {
+                                   && !connected; current_result =
+                                           current_result->ai_next) {
         skt = socket(current_result->ai_family,
-                      current_result->ai_socktype, current_result->ai_protocol);
+                      current_result->ai_socktype,
+                      current_result->ai_protocol);
         if (skt == -1) {
             freeaddrinfo(results);
             throw SocketException(strerror(errno));
@@ -91,7 +94,7 @@ void _connect(struct addrinfo* results, int& skt) {
         if (connect(skt, current_result->ai_addr,
                     current_result->ai_addrlen) == -1) {
             freeaddrinfo(results);
-            throw SocketException(strerror(errno));//hacer freeaddrinfo antes de tirar exception
+            throw SocketException(strerror(errno));
         } else {
             connected = true;
         }
@@ -164,7 +167,8 @@ Socket& Socket::operator=(Socket&& skt)  noexcept {
 
 Socket::Socket(Socket &&skt) noexcept {
     this->fd = skt.fd;
-    skt.fd = -1;//invalido el socket para q el que lo tenia antes no lo siga usando
+    skt.fd = -1;//invalido el socket para q el
+    // que lo tenia antes no lo siga usando
 }
 
 Socket::~Socket() {

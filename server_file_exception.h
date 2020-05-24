@@ -9,7 +9,7 @@ private:
     std::string error;
 public:
     explicit FileException(std::string&& error);
-    const char* what() const noexcept ;
+    const char* what() const noexcept;
     ~FileException();
 };
 

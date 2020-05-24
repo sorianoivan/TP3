@@ -10,9 +10,8 @@ private:
 
 public:
     explicit SocketException(std::string&& error);
-    const char* what() const noexcept ;
+    const char* what() const noexcept;
     ~SocketException();
-
 };
 
 

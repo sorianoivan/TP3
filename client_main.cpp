@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[]) {
     if (argc != 3){
-        std::cout << "Argumentos invalidos" << std::endl;
+        std::cout << "Error: argumentos invalidos." << std::endl;
         return 0;
     }
     try{

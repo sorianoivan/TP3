@@ -1,11 +1,9 @@
 #include "server_messenger.h"
 
-Messenger::Messenger(Socket &&peer, int num) {
-    this->peer = std::move(peer);
-    this->secret_num = num;
+/*Messenger::Messenger(Socket &&peer, int num, std::atomic<int>& winners) {
     this->client_done = false;
     this->tries = 0;
-}
+}*/
 
 Messenger::~Messenger() {}
 
@@ -15,23 +13,26 @@ bool Messenger::isDone(){
 
 void Messenger::run() {
     char cmd;
-    //try catch?
-    while (!isDone()) {
-        cmd = receiveCommand();
-        switch (cmd) {
-            case 'h':
-                sendHelp();
-                break;
-            case 's':
-                client_done = true;
-                sendLost();
-                break;
-            case 'n':
-                receiveNum();
-                break;
-            default:
-                break;
+    try {//para agarrar la excepcion en el thread
+        while (!isDone()) {
+            cmd = receiveCommand();
+            switch (cmd) {
+                case 'h':
+                    sendHelp();
+                    break;
+                case 's':
+                    client_done = true;
+                    sendLost();
+                    break;
+                case 'n':
+                    receiveNum();
+                    break;
+                default:
+                    break;
+            }
         }
+    } catch (std::exception& e) {
+        std::cout << e.what() << std::endl;
     }
 }
 
@@ -74,7 +75,8 @@ void Messenger::compareNums(std::string test_num) {
         sendLost();
 }
 
-void Messenger::sendResponse(unsigned short int bien, unsigned short int regular){
+void Messenger::sendResponse(unsigned short int bien,
+        unsigned short int regular){
     std::stringstream response;
     uint32_t size = 0;
     if (bien != 0 && regular != 0) {
@@ -85,6 +87,7 @@ void Messenger::sendResponse(unsigned short int bien, unsigned short int regular
         response << regular << " regular" << std::endl;
     } else if (bien == 3){
         client_done = true;
+        winners++;
         response << "Ganaste" << std::endl;
     } else {
         response << bien << " bien" << std::endl;

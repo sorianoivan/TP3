@@ -2,11 +2,13 @@
 
 #include <thread>
 #include <algorithm>
+#include <utility>
 
 Server::Server() {
     done_accepting = false;
     total_clients = 0;
     clients_removed = 0;
+    winners = 0;
 }
 
 bool isClientDone(Thread* client) {
@@ -18,7 +20,7 @@ bool isClientDone(Thread* client) {
     return false;
 }
 
-void Server::run(const char* port, std::string numbers) {//uso char* por el getaddrinfo
+void Server::run(const char* port, std::string numbers) {
     FileReader file_reader(std::move(numbers));
     file_reader.processFile(secret_nums);
 
@@ -35,6 +37,8 @@ void Server::run(const char* port, std::string numbers) {//uso char* por el geta
         delete client;
     }
     th.join();
+    std::cout << "Estadísticas:\n\tGanadores:  " << winners <<
+    "\n\tPerdedores: " << total_clients - winners << std::endl;
 }
 
 void Server::acceptClients() {
@@ -46,13 +50,15 @@ void Server::acceptClients() {
         } catch (std::exception& e) {}
         if (peer_skt.getFd() != -1) {
             curr_num = total_clients % secret_nums.size();
-            clients.push_back(new Messenger(std::move(peer_skt), secret_nums[curr_num]));
+            clients.push_back(new Messenger(std::move(peer_skt),
+                    secret_nums[curr_num], winners));
             clients[total_clients - clients_removed]->start();
             total_clients++;
         }
 
         int clients_before = clients.size();
-        clients.erase(std::remove_if(clients.begin(), clients.end(), isClientDone), clients.end());
+        clients.erase(std::remove_if(clients.begin(),
+                clients.end(), isClientDone), clients.end());
         int clients_after = clients.size();
         clients_removed += clients_before - clients_after;
     }
@@ -68,7 +74,6 @@ void Server::getChar() {
     done_accepting = true;
     shutdown(bind_skt.getFd(), SHUT_RDWR);
     close(bind_skt.getFd());
-
 }
 
 bool Server::doneAccepting() {

@@ -1,5 +1,8 @@
 #include "client.h"
 
+#include <string>
+#include <utility>
+
 Client::Client() {}
 
 void Client::run(const char* host, const char* port) {

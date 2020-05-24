@@ -18,7 +18,6 @@ public:
 private:
     bool verifyRange(int num);
     bool verifyRepeat(std::string num);
-
 };
 
 

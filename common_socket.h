@@ -32,6 +32,7 @@ public:
     int send(const void *msg, int msg_len) const;
 
     ~Socket();
+
 private:
     explicit Socket(int fd);
     void _setAddrInfo(struct addrinfo** results, const char* port);
@@ -40,8 +41,6 @@ private:
 
     void _bind(addrinfo *results, int &skt);
     void _setAddrInfo(addrinfo **results, const char *host, const char *port);
-
-
 };
 
 

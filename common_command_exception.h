@@ -8,9 +8,8 @@ private:
     std::string error;
 public:
     explicit CommandException(std::string&& error);
-    const char* what() const noexcept ;
+    const char* what() const noexcept;
     ~CommandException();
-
 };
 
 

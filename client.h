@@ -1,6 +1,8 @@
 #ifndef _CLIENT_H
 #define _CLIENT_H
 
+#include <string>
+
 #include "common_socket.h"
 #include "common_verifier.h"
 #include <iostream>

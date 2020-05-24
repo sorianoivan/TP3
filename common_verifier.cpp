@@ -3,7 +3,7 @@
 Verifier::Verifier() {}
 
 int Verifier::verifyNum(int num) {
-    if(!verifyRange(num)) return OUT_OF_RANGE;//Ver si tiro exception
+    if (!verifyRange(num)) return OUT_OF_RANGE;//Ver si tiro exception
     if (!verifyRepeat(std::to_string(num))) return REPEATED_DIGIT;
     return 0;
 }
