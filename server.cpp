@@ -1,9 +1,21 @@
 #include "server.h"
 
 #include <thread>
+#include <algorithm>
 
 Server::Server() {
     done_accepting = false;
+    total_clients = 0;
+    clients_removed = 0;
+}
+
+bool isClientDone(Thread* client) {
+    if (client->isDone()){
+        client->join();
+        delete client;
+        return true;
+    }
+    return false;
 }
 
 void Server::run(const char* port, std::string numbers) {//uso char* por el getaddrinfo
@@ -14,31 +26,37 @@ void Server::run(const char* port, std::string numbers) {//uso char* por el geta
     if (listen(bind_skt.getFd(), 10) == -1)
         throw SocketException("Error listen");
 
-    //Acceptor acceptor(std::move(secret_nums));
-    //acceptor.acceptClients(bind_skt);
     std::thread th(&Server::getChar, this);
-    //while (!doneAccepting()){
-        acceptClients();
-    //}
-    for (auto & client : clients){
+
+    acceptClients();
+
+    for (auto & client : clients) {
         client->join();
+        delete client;
     }
     th.join();
-
 }
 
 void Server::acceptClients() {
-    int i = 0;
+    unsigned int curr_num;
     while (!doneAccepting()) {
-        Socket peer_skt = bind_skt.accept();
+        Socket peer_skt;
+        try {
+            peer_skt = bind_skt.accept();
+        } catch (std::exception& e) {}
         if (peer_skt.getFd() != -1) {
-            clients.push_back(new Messenger(std::move(peer_skt), secret_nums[0]));
-            clients[i]->start();
-            i++;
+            curr_num = total_clients % secret_nums.size();
+            clients.push_back(new Messenger(std::move(peer_skt), secret_nums[curr_num]));
+            clients[total_clients - clients_removed]->start();
+            total_clients++;
         }
+
+        int clients_before = clients.size();
+        clients.erase(std::remove_if(clients.begin(), clients.end(), isClientDone), clients.end());
+        int clients_after = clients.size();
+        clients_removed += clients_before - clients_after;
     }
 }
-
 
 Server::~Server() {}
 
@@ -47,7 +65,10 @@ void Server::getChar() {
     do {
         std::cin >> cmd;
     }while (cmd != 'q');
-     done_accepting = true;
+    done_accepting = true;
+    shutdown(bind_skt.getFd(), SHUT_RDWR);
+    close(bind_skt.getFd());
+
 }
 
 bool Server::doneAccepting() {

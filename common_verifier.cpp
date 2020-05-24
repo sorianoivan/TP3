@@ -3,7 +3,7 @@
 Verifier::Verifier() {}
 
 int Verifier::verifyNum(int num) {
-    if(!verifyRange(num)) return OUT_OF_RANGE;
+    if(!verifyRange(num)) return OUT_OF_RANGE;//Ver si tiro exception
     if (!verifyRepeat(std::to_string(num))) return REPEATED_DIGIT;
     return 0;
 }
@@ -21,11 +21,11 @@ bool Verifier::verifyRepeat(std::string num) {
 }
 
 uint16_t Verifier::verifyCommand(std::string&& cmd) {
-    uint16_t num;
+    int num;
     num = std::stoi(cmd);//esto va a tirar excepcion si no entra en 2 bytes
-    if (num > 0 && num <= 65535) return num;
+    if (num <= 0 || num > 65535) throw CommandException("");
 
-    return 0;
+    return num;
 }
 
 Verifier::~Verifier() {}

@@ -16,6 +16,7 @@ private:
 public:
     Messenger(Socket&& peer, int num);
     void run() override;
+    bool isDone() override;
     ~Messenger();
 
 private:
@@ -33,7 +34,7 @@ private:
 
     void sendResponse(unsigned short int bien, unsigned short int regular);
 
-    bool isDone();
+
 };
 
 

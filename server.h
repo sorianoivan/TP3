@@ -19,15 +19,21 @@ private:
     std::vector<int> secret_nums;
     std::vector<Thread*> clients;
     std::atomic<bool> done_accepting;
+
+    int total_clients;
+    int clients_removed;
 public:
     Server();
     void run(const char* port, std::string numbers);
-    void getChar();
-    bool doneAccepting();
+
     ~Server();
 
 private:
+    void getChar();
+    bool doneAccepting();
     void acceptClients();
+    //bool isClientDone(Thread *client);
+
 };
 
 

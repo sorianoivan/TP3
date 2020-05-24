@@ -55,7 +55,7 @@ int Client::receiveResponse(){
     int received = 0;
     received = client_skt.receive(&len, 4);
     len = ntohl(len);
-    char* msg;
+    char* msg;//cambiar por vector?
     msg = new char[len + 2];
     client_skt.receive(msg, len);
     msg[len] = '\n';

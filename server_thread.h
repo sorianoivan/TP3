@@ -17,7 +17,7 @@ public:
     void join();
 
     virtual void run() = 0;       //Ver lo de borrar los constr por mov y qsy
-
+    virtual bool isDone() = 0;
     /* Destructor */
     virtual ~Thread();
 };

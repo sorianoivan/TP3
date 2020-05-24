@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "common_verifier.h"
+#include "server_file_exception.h"
 #include <vector>
 #include <iostream>
 

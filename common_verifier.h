@@ -6,6 +6,7 @@
 
 #include <string>
 #include "server_file_exception.h"
+#include "common_command_exception.h"
 
 class Verifier {
 private:
