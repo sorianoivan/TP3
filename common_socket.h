@@ -13,34 +13,47 @@
 
 class Socket {
 private:
-    int fd; //file descriptor
+    int fd;
 
 public:
+    /* Constructor */
     Socket();
-    Socket(const Socket& skt) = delete;//borro constr por copia
-    Socket(Socket&& skt) noexcept;//constructor por movimiento
+    /* Constructor por movimiento */
+    Socket(Socket&& skt) noexcept;
+    /* Constructor por copia anulado */
+    Socket(const Socket& skt) = delete;
 
-    Socket& operator=(const Socket& skt) = delete;
+    /* Asignacion por movimiento */
     Socket& operator=(Socket&& skt) noexcept;
+    /* Asignacion por copia borrada */
+    Socket& operator=(const Socket& skt) = delete;
 
-    void setUpConnection(const char* port);//server
+    /* Trata de establecer la conexion del socket bind del servidor.
+     * Si falla lanza una excepcion */
+    void setUpConnection(const char* port);
+    /* Trata de establecer la conexion del cliente con el servidor.
+     * Si falla lanza una excepcion */
     void setUpConnection(const char *host, const char *port);//client
-    //void setUpConnection(const char *host, const char *port);
-    Socket accept();
-    int getFd() const;
+    /* Devuelve el socket aceptado por el socket bind del serviddor*/
+    Socket accept() const;
+    /* Asigna a msg lo que recibe el socket. Si falla lanza una excepcion */
     int receive(void* msg, int len) const;
-    int send(const void *msg, int msg_len) const;
-
+    /* Envia msg. Si falla lanza una excepcion */
+    int send(const void *msg, int len) const;
+    /* Devuelve el file descriptor del socket */
+    int getFd() const;
+    /* Cierra el socket */
+    void close();
+    /* Destructor */
     ~Socket();
 
 private:
-    explicit Socket(int fd);
+    explicit Socket(int fd);//Es privado ya que solo lo usa la funcion accept()
+                            //para devolver un socket por movimiento
     void _setAddrInfo(struct addrinfo** results, const char* port);
-    /*void _setAddrInfo(struct addrinfo** results, const char* host,
-                      const char* port, const char* mode);*/
-
-    void _bind(addrinfo *results, int &skt);
     void _setAddrInfo(addrinfo **results, const char *host, const char *port);
+    void _bind(addrinfo *results, int &skt);
+    void _connect(addrinfo *results, int &skt);
 };
 
 

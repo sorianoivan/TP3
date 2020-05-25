@@ -6,67 +6,76 @@
 Client::Client() {}
 
 void Client::run(const char* host, const char* port) {
-    client_skt.setUpConnection(host, port);//ver si tengo q usar move
-    getCommand();
+    client_skt.setUpConnection(host, port);
+    _guessNumber();
 }
 
-void Client::getCommand() {
+/* Recibe comandos por entrada estandar y
+ * los ejecuta hasta que gane o pierda la partida */
+void Client::_guessNumber() {
     std::string cmd;
     int received = -1;
-    int sent = 0;
+    int sent;
     do {
         std::cin >> cmd;
-        sent = executeCommand(cmd);
-        if (sent != 0) {
-            received = receiveResponse();
-            sent = 0;
-        }
+        sent = _executeCommand(cmd);
+        if (sent != 0)//Si el comando es invalido no envio nada por lo que no
+                      // espero una respuesta
+            received = _receiveResponse();
     }while (received != 0);
 }
 
-int Client::executeCommand(std::string cmd){
+/* Si el comando es valido, envia el mensaje correspondiente al servidor */
+int Client::_executeCommand(const std::string& cmd){
     if (cmd == "AYUDA") {
-        return sendMessage('h');
+        return _sendMessage('h');
     } else if (cmd == "RENDIRSE") {
-        return sendMessage('s');
+        return _sendMessage('s');
     } else {
         uint16_t num = 0;
-        try {
-            num = verifier.verifyCommand(std::move(cmd));
+        try { //Si el comando es invalido tengo que agarrar la excepcion
+            num = verifier.verifyCommand(cmd);
         } catch (std::exception& e) {
             std::cout << "Error: comando inválido. "
                          "Escriba AYUDA para obtener ayuda" << std::endl;
         }
-        if (num != 0) return sendMessage(num);
+        if (num != 0) return _sendMessage(num);
     }
     return 0;
 }
 
-int Client::sendMessage(uint16_t num) {
+/* Envia al servidor el numero para que lo compare con el secreto
+ * siguiendo el protocolo especificado*/
+int Client::_sendMessage(uint16_t num) {
     char to_send = 'n';
     client_skt.send(&to_send, 1);
     num = htons(num);
     return client_skt.send(&num, 2);
 }
 
-int Client::sendMessage(char to_send) {
+/* Le envia el comando al servidor pidiendo ayuda o rindiendose
+ * siguiendo el protocolo especificado */
+int Client::_sendMessage(const char to_send) {
     return client_skt.send(&to_send, 1);
 }
 
-int Client::receiveResponse(){
+/* Recibe la respuesta del servidor siguiendo el protocolo especificado.
+ * Uso char* en vez de std::vector<char> ya que la funcion recv de sockets
+ * recibe void* y no soporta std::vector */
+int Client::_receiveResponse(){
     uint32_t len = 0;
     int received = 0;
     received = client_skt.receive(&len, 4);
     len = ntohl(len);
-    char* msg;//cambiar por vector?
-    msg = new char[len + 2];
-    client_skt.receive(msg, len);
-    msg[len] = '\n';
-    msg[len + 1] = '\0';
-    std::cout << msg;
-    if (!strncmp(msg, "Perdiste", 8) || !strncmp(msg, "Ganaste", 7))
+    char* response;
+    response = new char[len + 2];
+    client_skt.receive(response, len);
+    response[len] = '\n';
+    response[len + 1] = '\0';
+    std::cout << response;
+    if (!strncmp(response, "Perdiste", 8) || !strncmp(response, "Ganaste", 7))
         received = 0;
-    delete [] msg;
+    delete [] response;
     return received;
 }
 

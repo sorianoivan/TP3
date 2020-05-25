@@ -5,20 +5,24 @@
 #define REPEATED_DIGIT -2
 
 #include <string>
-#include "server_file_exception.h"
-#include "common_command_exception.h"
+
+#include "common_exception.h"
 
 class Verifier {
 private:
 public:
+    /* Constructor */
     Verifier();
-    int verifyNum(int num);
-    uint16_t verifyCommand(std::string&& cmd);
+    /* Verifica si el numero es de 3 cifras y no estan repetidas */
+    int verifyNum(const int num);
+    /* Verifica que el comando enviado sea valido, es decir, un numero
+     * que pueda ser representado con 2 bytes */
+    uint16_t verifyCommand(const std::string& cmd);
+    /* Destructor */
     ~Verifier();
 private:
-    bool verifyRange(int num);
-    bool verifyRepeat(std::string num);
+    bool _verifyRange(const int num);
+    bool _verifyRepeat(const std::string& num);
 };
-
 
 #endif //_NUMVERIFIER_H

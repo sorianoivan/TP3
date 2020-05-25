@@ -17,5 +17,5 @@ int main(int argc, char* argv[]) {
         std::cerr << "Unknown error" << std::endl;
         return 0;
     }
-    return 0;//ver esto del retorno del cliente
+    return 0;
 }

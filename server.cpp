@@ -43,6 +43,8 @@ void Server::run(const char* port, std::string numbers) {
 
 void Server::acceptClients() {
     unsigned int curr_num;
+    int clients_before = 0;
+    int clients_after = 0;
     while (!doneAccepting()) {
         Socket peer_skt;
         try {
@@ -56,15 +58,15 @@ void Server::acceptClients() {
             total_clients++;
         }
 
-        int clients_before = clients.size();
+        clients_before = clients.size();
         clients.erase(std::remove_if(clients.begin(),
                 clients.end(), isClientDone), clients.end());
-        int clients_after = clients.size();
+        clients_after = clients.size();
         clients_removed += clients_before - clients_after;
     }
 }
 
-Server::~Server() {}
+
 
 void Server::getChar() {
     char cmd;
@@ -72,13 +74,12 @@ void Server::getChar() {
         std::cin >> cmd;
     }while (cmd != 'q');
     done_accepting = true;
-    shutdown(bind_skt.getFd(), SHUT_RDWR);
-    close(bind_skt.getFd());
+    bind_skt.close();
 }
 
 bool Server::doneAccepting() {
     return done_accepting;
 }
 
-
+Server::~Server() {}
 

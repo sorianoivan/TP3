@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "server_file_exception.h"
+#include "common_exception.h"
 #include "common_socket_exception.h"
 #include "server_file_reader.h"
 #include "common_socket.h"

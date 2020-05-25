@@ -4,14 +4,14 @@
 #include <exception>
 #include <string>
 
-class FileException : public std::exception {
+class CommonException : public std::exception {
 private:
     std::string error;
-public:
-    explicit FileException(std::string&& error);
-    const char* what() const noexcept;
-    ~FileException();
-};
 
+public:
+    explicit CommonException(std::string&& error);
+    const char* what() const noexcept;
+    ~CommonException();
+};
 
 #endif //_FILEEXCEPTION_H
