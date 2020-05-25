@@ -5,13 +5,13 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <atomic>
 
 #include "common_exception.h"
 #include "common_socket_exception.h"
 #include "server_file_reader.h"
 #include "common_socket.h"
 #include "server_messenger.h"
-#include <atomic>
 
 class Server {
 private:
@@ -19,22 +19,28 @@ private:
     std::vector<int> secret_nums;
     std::vector<Thread*> clients;
     std::atomic<bool> done_accepting;
+    std::thread get_terminating_cmd_th;
 
-    int total_clients;
-    int clients_removed;
+    unsigned int total_clients;
+    unsigned int clients_removed;
     std::atomic<int> winners;
-    //std::atomic<int> losers;
-public:
-    Server();
-    void run(const char* port, std::string numbers);//hacerla con el operator()
 
+public:
+    /* Constructor */
+    Server();
+    /* Comienza la ejecucion del server */
+    void run(const char* port, std::string numbers);
+    /* Destructor */
     ~Server();
 
 private:
-    void getChar();
-    bool doneAccepting();
-    void acceptClients();
+    void _getTerminatingCmd();
+    void _acceptClients();
+    void _getNumbers(std::string &numbers);
+    void _deleteClients();
+    void _removeFinishedClients();
+    void _showResults() const;
+    void _finish();
 };
-
 
 #endif //_SERVER_H

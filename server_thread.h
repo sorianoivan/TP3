@@ -23,6 +23,4 @@ public:
     virtual ~Thread();
 };
 
-
-
 #endif //_THREAD_H

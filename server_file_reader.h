@@ -20,6 +20,8 @@ public:
      * Si alguno de los numeros no cumple con el formato o el archivo esta
      * vacio lanza una excepcion */
     void processFile(std::vector<int>& secret_nums);
+    /* Sobrecarga del operador () */
+    void operator()(std::vector<int>& secret_nums);
     /* Destructor */
     ~FileReader();
 };

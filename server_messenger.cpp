@@ -39,7 +39,7 @@ char Messenger::_receiveCommand() {
 }
 
 /* Envia la respuesta al comando que me envio el cliente */
-void Messenger::_executeCommand(char cmd) {
+void Messenger::_executeCommand(const char cmd) {
     switch (cmd) {
         case 'h':
             _sendResponse(AYUDA);
@@ -71,7 +71,7 @@ void Messenger::_receiveNum(){
 }
 
 /* Compara el numero de prueba con el secreto y envia la respuesta al cliente*/
-void Messenger::_compareNums(std::string test_num) {
+void Messenger::_compareNums(const std::string& test_num) {
     char test_digit;
     char secret_digit;
     int bien = 0, regular = 0;
@@ -94,31 +94,31 @@ void Messenger::_compareNums(std::string test_num) {
 
 /* Arma la respuesta que hay que enviar al cliente
  * luego de comparar los numeros */
-void Messenger::_buildResponse(unsigned short int bien,
-                               unsigned short int regular,
+void Messenger::_buildResponse(const unsigned short int bien,
+                               const unsigned short int regular,
                                std::stringstream& response){
     if (bien != 0 && regular != 0) {
-        response << bien << " bien, " << regular << " regular" << std::endl;
+        response << bien << " bien, " << regular << " regular";
     } else if (bien == 0 && regular == 0){
-        response << "3 mal" << std::endl;
+        response << "3 mal";
     } else if (bien == 0){
-        response << regular << " regular" << std::endl;
+        response << regular << " regular";
     } else if (bien == 3){
         client_done = true;
         winners++;
-        response << "Ganaste" << std::endl;
+        response << "Ganaste";
     } else {
-        response << bien << " bien" << std::endl;
+        response << bien << " bien";
     }
 }
 
 /* Le envia al cliente el resultado de la comparacion de numeros */
-void Messenger::_sendResponse(unsigned short int bien,
-                              unsigned short int regular){
+void Messenger::_sendResponse(const unsigned short int bien,
+                              const unsigned short int regular){
     uint32_t size;
     std::stringstream response;
     _buildResponse(bien, regular, response);
-    size = response.str().size() - 1;// el -1 es para no mandar el \0
+    size = response.str().size();
     size = htonl(size);
     peer.send(&size, STRING_SIZE_LEN);
     size = ntohl(size);

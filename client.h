@@ -16,7 +16,7 @@ private:
 public:
     /* Constructor */
     Client();
-    /* Ejecuta el cliente */
+    /* Comienza la ejecucion del cliente */
     void run(const char* host, const char* port);
     /* Destructor */
     ~Client();

@@ -34,13 +34,14 @@ public:
 
 private:
     char _receiveCommand();
-    void _executeCommand(char cmd);
+    void _executeCommand(const char cmd);
     void _receiveNum();
-    void _compareNums(std::string test_num);
+    void _compareNums(const std::string& test_num);
     void _sendResponse(const std::string &response);
-    void _sendResponse(unsigned short int bien, unsigned short int regular);
-    void _buildResponse(unsigned short bien, unsigned short regular,
-            std::stringstream &response);
+    void _sendResponse(const unsigned short int bien,
+            const unsigned short int regular);
+    void _buildResponse(const unsigned short bien,
+            const unsigned short regular, std::stringstream &response);
 };
 
 #endif //_SERVERMESSENGER_H

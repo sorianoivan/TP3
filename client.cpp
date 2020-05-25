@@ -3,6 +3,8 @@
 #include <string>
 #include <utility>
 
+#define STRING_SIZE_LEN 4
+
 Client::Client() {}
 
 void Client::run(const char* host, const char* port) {
@@ -63,11 +65,10 @@ int Client::_sendMessage(const char to_send) {
  * Uso char* en vez de std::vector<char> ya que la funcion recv de sockets
  * recibe void* y no soporta std::vector */
 int Client::_receiveResponse(){
-    uint32_t len = 0;
-    int received = 0;
-    received = client_skt.receive(&len, 4);
-    len = ntohl(len);
     char* response;
+    uint32_t len = 0;
+    int received = client_skt.receive(&len, STRING_SIZE_LEN);
+    len = ntohl(len);
     response = new char[len + 2];
     client_skt.receive(response, len);
     response[len] = '\n';

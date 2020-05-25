@@ -25,3 +25,7 @@ void FileReader::processFile(std::vector<int>& secret_nums) {
 FileReader::~FileReader() {
     this->file.close();
 }
+
+void FileReader::operator()(std::vector<int>& secret_nums) {
+    this->processFile(secret_nums);
+}

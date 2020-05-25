@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <utility>
 
+#define TERMINATING_CHAR 'q'
+
 Server::Server() {
     done_accepting = false;
     total_clients = 0;
@@ -11,6 +13,83 @@ Server::Server() {
     winners = 0;
 }
 
+void Server::run(const char* port, std::string numbers) {
+    _getNumbers(numbers);
+
+    bind_skt.setUpConnection(port);
+    if (listen(bind_skt.getFd(), 10) == -1)
+        throw SocketException(strerror(errno));
+
+    get_terminating_cmd_th = std::thread(&Server::_getTerminatingCmd, this);
+
+    _acceptClients();
+
+    _finish();
+}
+
+/* Pide a un FileReader que lea el archivo y llene la lista
+ * de numeros secretos */
+void Server::_getNumbers(std::string& numbers) {
+    FileReader file_reader(std::move(numbers));
+    file_reader(secret_nums);
+}
+
+/* Mientras el servidor siga escuchando se aceptaran clientes y
+ * por cada uno que se acepta se lanza un hilo con un Messenger que se
+ * comunica con dicho cliente */
+void Server::_acceptClients() {
+    unsigned int curr_num_index, total_nums;
+    total_nums = secret_nums.size();
+    while (!done_accepting) {
+        Socket peer_skt;
+        try {
+            peer_skt = bind_skt.accept();
+        } catch (std::exception& e) {}
+        if (peer_skt.getFd() != -1) {
+            curr_num_index = total_clients % total_nums;
+            clients.push_back(new Messenger(std::move(peer_skt),
+                                            secret_nums[curr_num_index],
+                                            winners));
+
+            clients[total_clients - clients_removed]->start();
+            total_clients++;
+        }
+        _removeFinishedClients();
+    }
+}
+
+/* Espera por entrada estandar al caracter que indica que el servidor no
+ * aceptara mas clientes */
+void Server::_getTerminatingCmd() {
+    char cmd;
+    do {
+        std::cin >> cmd;
+    }while (cmd != TERMINATING_CHAR);
+    done_accepting = true;
+    bind_skt.close();
+}
+
+/* Finaliza la ejecucion del server */
+void Server::_finish(){
+    _deleteClients();
+
+    get_terminating_cmd_th.join();
+
+    _showResults();
+}
+
+/* Espera que se terminen las comunicaciones con los clientes que queden
+ * y luego libera sus recursos */
+void Server::_deleteClients(){
+    for (auto & client : clients) {
+        client->join();
+        delete client;
+    }
+}
+
+/* Esta funcion es utilizada por el metodo std::remove_if en
+ * _removeFinishedClients para decidir que clientes debe
+ * eliminar de la lista */
 bool isClientDone(Thread* client) {
     if (client->isDone()){
         client->join();
@@ -20,66 +99,20 @@ bool isClientDone(Thread* client) {
     return false;
 }
 
-void Server::run(const char* port, std::string numbers) {
-    FileReader file_reader(std::move(numbers));
-    file_reader.processFile(secret_nums);
+/* Remueve del vector a los clientes que ya hayan terminado su ejecucion */
+void Server::_removeFinishedClients() {
+    unsigned int clients_before, clients_after;
+    clients_before = clients.size();
+    clients.erase(std::remove_if(clients.begin(),
+                                 clients.end(), isClientDone), clients.end());
+    clients_after = clients.size();
+    clients_removed += clients_before - clients_after;
+}
 
-    bind_skt.setUpConnection(port);
-    if (listen(bind_skt.getFd(), 10) == -1)
-        throw SocketException("Error listen");
-
-    std::thread th(&Server::getChar, this);
-
-    acceptClients();
-
-    for (auto & client : clients) {
-        client->join();
-        delete client;
-    }
-    th.join();
+/* Muestra la cantidad de ganadores y perdedores */
+void Server::_showResults() const {
     std::cout << "Estadísticas:\n\tGanadores:  " << winners <<
-    "\n\tPerdedores: " << total_clients - winners << std::endl;
-}
-
-void Server::acceptClients() {
-    unsigned int curr_num;
-    int clients_before = 0;
-    int clients_after = 0;
-    while (!doneAccepting()) {
-        Socket peer_skt;
-        try {
-            peer_skt = bind_skt.accept();
-        } catch (std::exception& e) {}
-        if (peer_skt.getFd() != -1) {
-            curr_num = total_clients % secret_nums.size();
-            clients.push_back(new Messenger(std::move(peer_skt),
-                    secret_nums[curr_num], winners));
-            clients[total_clients - clients_removed]->start();
-            total_clients++;
-        }
-
-        clients_before = clients.size();
-        clients.erase(std::remove_if(clients.begin(),
-                clients.end(), isClientDone), clients.end());
-        clients_after = clients.size();
-        clients_removed += clients_before - clients_after;
-    }
-}
-
-
-
-void Server::getChar() {
-    char cmd;
-    do {
-        std::cin >> cmd;
-    }while (cmd != 'q');
-    done_accepting = true;
-    bind_skt.close();
-}
-
-bool Server::doneAccepting() {
-    return done_accepting;
+              "\n\tPerdedores: " << total_clients - winners << std::endl;
 }
 
 Server::~Server() {}
-
