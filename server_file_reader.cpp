@@ -5,8 +5,11 @@ FileReader::FileReader(std::string&& filename) {
     if (!file.is_open()) throw CommonException("Error abriendo Archivo");
 }
 
-void FileReader::processFile(std::vector<int>& secret_nums) {
-    int secret_num = 0;
+/* Lee el archivo y mete los numeros leidos en el vector secret_nums.
+     * Si alguno de los numeros no cumple con el formato o el archivo esta
+     * vacio lanza una excepcion */
+void FileReader::processFile(std::vector<unsigned int>& secret_nums) {
+    unsigned int secret_num = 0;
     int flag;
     file.peek();//Para ver si el archivo esta vacio
     while (!file.eof()) {
@@ -26,6 +29,6 @@ FileReader::~FileReader() {
     this->file.close();
 }
 
-void FileReader::operator()(std::vector<int>& secret_nums) {
+void FileReader::operator()(std::vector<unsigned int>& secret_nums) {
     this->processFile(secret_nums);
 }

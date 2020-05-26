@@ -14,13 +14,14 @@ class Messenger : public Thread {
 private:
     Socket peer;
     Verifier verifier;
-    int secret_num, tries;
+    unsigned int secret_num, tries;
     bool client_done;
-    std::atomic<int>& winners;
+    std::atomic<unsigned int>& winners;
 
 public:
     /* Constructor */
-    Messenger(Socket&& peer, int num, std::atomic<int>& winners) :
+    Messenger(Socket&& peer, unsigned int num,
+            std::atomic<unsigned int>& winners) :
                 peer(std::move(peer)), secret_num(num),
                 tries(0), client_done(false) , winners(winners){}
 

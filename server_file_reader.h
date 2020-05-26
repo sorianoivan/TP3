@@ -16,14 +16,13 @@ private:
 public:
     /* Constructor */
     explicit FileReader(std::string&& filename);
-    /* Lee el archivo y mete los numeros leidos en el vector secret_nums.
-     * Si alguno de los numeros no cumple con el formato o el archivo esta
-     * vacio lanza una excepcion */
-    void processFile(std::vector<int>& secret_nums);
     /* Sobrecarga del operador () */
-    void operator()(std::vector<int>& secret_nums);
+    void operator()(std::vector<unsigned int>& secret_nums);
     /* Destructor */
     ~FileReader();
+
+private:
+    void processFile(std::vector<unsigned int>& secret_nums);
 };
 
 

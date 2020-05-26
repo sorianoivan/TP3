@@ -16,14 +16,14 @@
 class Server {
 private:
     Socket bind_skt;
-    std::vector<int> secret_nums;
+    std::vector<unsigned int> secret_nums;
     std::vector<Thread*> clients;
     std::atomic<bool> done_accepting;
-    std::thread get_terminating_cmd_th;
+    std::thread get_char_thread;
 
     unsigned int total_clients;
     unsigned int clients_removed;
-    std::atomic<int> winners;
+    std::atomic<unsigned int> winners;
 
 public:
     /* Constructor */
@@ -36,6 +36,7 @@ public:
 private:
     void _getTerminatingCmd();
     void _acceptClients();
+    void _addClient(Socket &peer_skt, const unsigned int total_nums);
     void _getNumbers(std::string &numbers);
     void _deleteClients();
     void _removeFinishedClients();

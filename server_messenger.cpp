@@ -52,7 +52,7 @@ void Messenger::_executeCommand(const char cmd) {
             _receiveNum();
             break;
         default:
-            break;
+            throw CommonException("Unknown command");
     }
 }
 

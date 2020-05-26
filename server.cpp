@@ -17,10 +17,11 @@ void Server::run(const char* port, std::string numbers) {
     _getNumbers(numbers);
 
     bind_skt.setUpConnection(port);
+
     if (listen(bind_skt.getFd(), 10) == -1)
         throw SocketException(strerror(errno));
 
-    get_terminating_cmd_th = std::thread(&Server::_getTerminatingCmd, this);
+    get_char_thread = std::thread(&Server::_getTerminatingCmd, this);
 
     _acceptClients();
 
@@ -38,24 +39,28 @@ void Server::_getNumbers(std::string& numbers) {
  * por cada uno que se acepta se lanza un hilo con un Messenger que se
  * comunica con dicho cliente */
 void Server::_acceptClients() {
-    unsigned int curr_num_index, total_nums;
-    total_nums = secret_nums.size();
+    unsigned int total_nums = secret_nums.size();
     while (!done_accepting) {
         Socket peer_skt;
-        try {
+        try {//Para agarrar la exception cuando cierre el socket
             peer_skt = bind_skt.accept();
         } catch (std::exception& e) {}
         if (peer_skt.getFd() != -1) {
-            curr_num_index = total_clients % total_nums;
-            clients.push_back(new Messenger(std::move(peer_skt),
-                                            secret_nums[curr_num_index],
-                                            winners));
-
-            clients[total_clients - clients_removed]->start();
-            total_clients++;
+            _addClient(peer_skt, total_nums);
         }
         _removeFinishedClients();
     }
+}
+
+void Server::_addClient(Socket& peer_skt, const unsigned int total_nums){
+    unsigned int curr_num_index;
+    curr_num_index = total_clients % total_nums;
+    clients.push_back(new Messenger(std::move(peer_skt),
+                                    secret_nums[curr_num_index],
+                                    winners));
+
+    clients[total_clients - clients_removed]->start();
+    total_clients++;
 }
 
 /* Espera por entrada estandar al caracter que indica que el servidor no
@@ -73,7 +78,7 @@ void Server::_getTerminatingCmd() {
 void Server::_finish(){
     _deleteClients();
 
-    get_terminating_cmd_th.join();
+    get_char_thread.join();
 
     _showResults();
 }
@@ -89,7 +94,8 @@ void Server::_deleteClients(){
 
 /* Esta funcion es utilizada por el metodo std::remove_if en
  * _removeFinishedClients para decidir que clientes debe
- * eliminar de la lista */
+ * eliminar del vector. Antes de que sean eliminados se deben liberar
+ * la memoria dinamica */
 bool isClientDone(Thread* client) {
     if (client->isDone()){
         client->join();
@@ -102,6 +108,7 @@ bool isClientDone(Thread* client) {
 /* Remueve del vector a los clientes que ya hayan terminado su ejecucion */
 void Server::_removeFinishedClients() {
     unsigned int clients_before, clients_after;
+
     clients_before = clients.size();
     clients.erase(std::remove_if(clients.begin(),
                                  clients.end(), isClientDone), clients.end());
