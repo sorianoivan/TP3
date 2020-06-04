@@ -1,13 +1,10 @@
 #ifndef _CLIENT_H
 #define _CLIENT_H
 
-#include <iostream>
-#include <string>
-#include <vector>
-
 #include "common_socket.h"
 #include "common_verifier.h"
 
+#include <string>
 
 class Client {
 private:
@@ -25,7 +22,7 @@ private:
     void _guessNumber();
     int _executeCommand(const std::string& cmd);
     int _sendMessage(const char to_send);
-    int _sendMessage(uint16_t num);
+    int _sendMessage(int16_t num);
     int _receiveResponse();
 };
 

@@ -1,10 +1,9 @@
 #ifndef _FILEREADER_H
 #define _FILEREADER_H
 
-#include <iostream>
 #include <vector>
-#include <string>
 #include <fstream>
+#include <string>
 
 #include "common_verifier.h"
 #include "common_exception.h"

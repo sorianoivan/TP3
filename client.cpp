@@ -1,7 +1,5 @@
 #include "client.h"
 
-#include <string>
-#include <utility>
 
 #define STRING_SIZE_LEN 4
 
@@ -34,21 +32,21 @@ int Client::_executeCommand(const std::string& cmd){
     } else if (cmd == "RENDIRSE") {
         return _sendMessage('s');
     } else {
-        uint16_t num = 0;
+        int16_t num = -1;
         try { //Si el comando es invalido tengo que agarrar la excepcion
             num = verifier.verifyCommand(cmd);
         } catch (std::exception& e) {
             std::cout << "Error: comando inválido. "
                          "Escriba AYUDA para obtener ayuda" << std::endl;
         }
-        if (num != 0) return _sendMessage(num);
+        if (num != -1) return _sendMessage(num);
     }
     return 0;
 }
 
 /* Envia al servidor el numero para que lo compare con el secreto
  * siguiendo el protocolo especificado*/
-int Client::_sendMessage(uint16_t num) {
+int Client::_sendMessage(int16_t num) {
     char to_send = 'n';
     client_skt.send(&to_send, 1);
     num = htons(num);

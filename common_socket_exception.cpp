@@ -1,9 +1,7 @@
 #include "common_socket_exception.h"
 
-#include <utility>
-
 SocketException::SocketException(std::string &&error) {
-    this->error = std::move(error);
+    this->error = error;
 }
 
 const char *SocketException::what() const noexcept {

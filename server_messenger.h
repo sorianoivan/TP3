@@ -1,9 +1,9 @@
 #ifndef _SERVERMESSENGER_H
 #define _SERVERMESSENGER_H
 
-#include <string>
 #include <sstream>
 #include <atomic>
+#include <string>
 #include <utility>
 
 #include "common_socket.h"

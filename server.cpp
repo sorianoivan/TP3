@@ -1,6 +1,5 @@
 #include "server.h"
 
-#include <thread>
 #include <algorithm>
 #include <utility>
 
@@ -18,8 +17,7 @@ void Server::run(const char* port, std::string numbers) {
 
     bind_skt.setUpConnection(port);
 
-    if (listen(bind_skt.getFd(), 10) == -1)
-        throw SocketException(strerror(errno));
+    bind_skt.listen();
 
     get_char_thread = std::thread(&Server::_getTerminatingCmd, this);
 
@@ -77,9 +75,7 @@ void Server::_getTerminatingCmd() {
 /* Finaliza la ejecucion del server */
 void Server::_finish(){
     _deleteClients();
-
     get_char_thread.join();
-
     _showResults();
 }
 

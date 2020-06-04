@@ -1,5 +1,7 @@
 #include "common_socket.h"
 
+#define MAX_LISTENERS 10
+
 Socket::Socket() {
     this->fd = -1;
 }
@@ -32,6 +34,11 @@ void Socket::setUpConnection(const char* host, const char* port){//client
     _setAddrInfo(&results, host, port);
 
     _connect(results, this->fd);
+}
+
+void Socket::listen() {
+    if (::listen(this->fd, MAX_LISTENERS) == -1)
+        throw SocketException(strerror(errno));
 }
 
 Socket Socket::accept() const {
@@ -123,28 +130,30 @@ void Socket::_bind(struct addrinfo* results, int& skt) {
 
     for (current_result = results; current_result != NULL && !connected;
                                 current_result = current_result->ai_next) {
-        skt = socket(current_result->ai_family,
-                     current_result->ai_socktype,
-                     current_result->ai_protocol);
+        skt = socket(current_result->ai_family, current_result->ai_socktype,
+                                                current_result->ai_protocol);
         if (skt == -1) {
-            freeaddrinfo(results);
-            throw SocketException(strerror(errno));
-        }
-        int val = 1;
-        if (setsockopt(skt, SOL_SOCKET, SO_REUSEADDR,
-                       &val, sizeof(val)) == -1) {
-            freeaddrinfo(results);
-            throw SocketException(strerror(errno));
-        }
-        if (bind(skt, current_result->ai_addr,
-                 current_result->ai_addrlen) == -1) {
-            freeaddrinfo(results);
-            throw SocketException(strerror(errno));
+            std::cout << strerror(errno) << std::endl;
         } else {
-            connected = true;
+            int val = 1;
+            if (setsockopt(skt, SOL_SOCKET, SO_REUSEADDR,
+                           &val, sizeof(val)) == -1) {
+                std::cout << strerror(errno) << std::endl;
+                ::close(skt);
+            } else {
+                if (bind(skt, current_result->ai_addr,
+                         current_result->ai_addrlen) == -1) {
+                    std::cout << strerror(errno) << std::endl;
+                    ::close(skt);
+                } else {
+                    connected = true;
+                }
+            }
         }
     }
     freeaddrinfo(results);
+
+    if (!connected) throw SocketException("Could not bind");
 }
 
 /* Idem _bind() */
@@ -159,18 +168,19 @@ void Socket::_connect(struct addrinfo* results, int& skt) {
                       current_result->ai_socktype,
                       current_result->ai_protocol);
         if (skt == -1) {
-            freeaddrinfo(results);
-            throw SocketException(strerror(errno));
-        }
-        if (connect(skt, current_result->ai_addr,
-                    current_result->ai_addrlen) == -1) {
-            freeaddrinfo(results);
-            throw SocketException(strerror(errno));
+            std::cout << strerror(errno) << std::endl;
         } else {
-            connected = true;
+            if (connect(skt, current_result->ai_addr,
+                        current_result->ai_addrlen) == -1) {
+                std::cout << strerror(errno) << std::endl;
+                ::close(skt);
+            } else {
+                connected = true;
+            }
         }
     }
     freeaddrinfo(results);
+    if (!connected) throw SocketException("Could not connect");
 }
 
 void Socket::close() {

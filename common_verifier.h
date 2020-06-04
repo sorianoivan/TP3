@@ -4,9 +4,9 @@
 #define OUT_OF_RANGE -1
 #define REPEATED_DIGIT -2
 
-#include <string>
-
 #include "common_exception.h"
+
+#include <string>
 
 class Verifier {
 private:
@@ -17,7 +17,7 @@ public:
     int verifyNum(const unsigned int num) const;
     /* Verifica que el comando enviado sea valido, es decir, un numero
      * que pueda ser representado con 2 bytes */
-    uint16_t verifyCommand(const std::string& cmd) const;
+    int16_t verifyCommand(const std::string& cmd) const;
     /* Destructor */
     ~Verifier();
 private:

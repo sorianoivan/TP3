@@ -12,11 +12,11 @@ int Verifier::verifyNum(const unsigned int num) const {
     return 0;
 }
 
-uint16_t Verifier::verifyCommand(const std::string& cmd) const  {
+int16_t Verifier::verifyCommand(const std::string& cmd) const  {
     int num;
     num = std::stoi(cmd);//esto va a tirar excepcion si no entra en 2 bytes
-    if (num <= 0 || num > MAX_NUM_2_BYTES)
-        throw CommonException("Numero fuera de rango");
+    if (num < 0 || num > MAX_NUM_2_BYTES)
+        throw CommonException("Numero fuera de Rango");
 
     return num;
 }

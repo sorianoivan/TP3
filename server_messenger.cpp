@@ -1,5 +1,7 @@
 #include "server_messenger.h"
 
+#include <string>
+
 #define AYUDA "Comandos válidos:\n\tAYUDA: despliega la lista de"\
 " comandos válidos\n\tRENDIRSE: pierde el juego "\
 "automáticamente\n\tXXX: Número de 3 cifras a ser"\

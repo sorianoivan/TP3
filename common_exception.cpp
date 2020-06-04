@@ -1,9 +1,7 @@
 #include "common_exception.h"
 
-#include <utility>
-
 CommonException::CommonException(std::string&& error) {
-    this->error = std::move(error);
+    this->error = error;
 }
 
 const char *CommonException::what() const noexcept {

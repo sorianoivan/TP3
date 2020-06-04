@@ -1,11 +1,8 @@
 #ifndef _SERVER_H
 #define _SERVER_H
 
-#include <iostream>
-#include <sstream>
-#include <string>
 #include <vector>
-#include <atomic>
+#include <string>
 
 #include "common_exception.h"
 #include "common_socket_exception.h"

@@ -1,5 +1,7 @@
 #include "server_file_reader.h"
 
+#include <string>
+
 FileReader::FileReader(std::string&& filename) {
     this->file.open(filename);
     if (!file.is_open()) throw CommonException("Error abriendo Archivo");

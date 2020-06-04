@@ -2,7 +2,6 @@
 #define _COMMONSOCKET_H
 
 #include <iostream>
-#include <string>
 #include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -31,6 +30,8 @@ public:
     /* Trata de establecer la conexion del socket bind del servidor.
      * Si falla lanza una excepcion */
     void setUpConnection(const char* port);
+
+    void listen();
     /* Trata de establecer la conexion del cliente con el servidor.
      * Si falla lanza una excepcion */
     void setUpConnection(const char *host, const char *port);//client
