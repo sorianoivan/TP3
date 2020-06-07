@@ -18,7 +18,7 @@ Socket& Socket::operator=(Socket&& skt)  noexcept {
     return *this;
 }
 
-void Socket::setUpConnection(const char* port) {
+void Socket::setUpConnection(const char* port) {//server
     struct addrinfo *results;
     std::memset(&results, 0, sizeof(struct addrinfo *));
 
@@ -106,7 +106,7 @@ void Socket::_setAddrInfo(struct addrinfo** results, const char* port) {//server
 }
 
 void Socket::_setAddrInfo(struct addrinfo** results, const char* host,
-                          const char* port) {//server
+                          const char* port) {//client
     struct addrinfo hints;
     int flag;
 
@@ -133,17 +133,17 @@ void Socket::_bind(struct addrinfo* results, int& skt) {
         skt = socket(current_result->ai_family, current_result->ai_socktype,
                                                 current_result->ai_protocol);
         if (skt == -1) {
-            std::cout << strerror(errno) << std::endl;
+            std::cerr << strerror(errno) << std::endl;
         } else {
             int val = 1;
             if (setsockopt(skt, SOL_SOCKET, SO_REUSEADDR,
                            &val, sizeof(val)) == -1) {
-                std::cout << strerror(errno) << std::endl;
+                std::cerr << strerror(errno) << std::endl;
                 ::close(skt);
             } else {
                 if (bind(skt, current_result->ai_addr,
                          current_result->ai_addrlen) == -1) {
-                    std::cout << strerror(errno) << std::endl;
+                    std::cerr << strerror(errno) << std::endl;
                     ::close(skt);
                 } else {
                     connected = true;

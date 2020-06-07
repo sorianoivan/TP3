@@ -30,11 +30,11 @@ public:
     /* Trata de establecer la conexion del socket bind del servidor.
      * Si falla lanza una excepcion */
     void setUpConnection(const char* port);
-
-    void listen();
     /* Trata de establecer la conexion del cliente con el servidor.
      * Si falla lanza una excepcion */
     void setUpConnection(const char *host, const char *port);//client
+    /* Escucha conexiones */
+    void listen();
     /* Devuelve el socket aceptado por el socket bind del serviddor*/
     Socket accept() const;
     /* Asigna a msg lo que recibe el socket. Si falla lanza una excepcion */

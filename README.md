@@ -57,3 +57,29 @@ El cliente comienza recibiendo un comando por la entrada estándar. Si el comand
 Diagrama de secuencia de Cliente:
 
 ![ClientSequenceDiagram](/img/ClientSequenceDiagram.png)
+
+
+
+### <u>Reentrega</u>
+
+A continuación se listan los cambios realizados para la reentrega:
+
+##### Issue #1:
+
+Se borraron la mayoría de los includes repetidos. Sin embargo, tuve que dejar algunos ya que sino la verificación de normas de codificación fallaba.
+
+##### Issue #2:
+
+Se borro el std::move() redundante en las clases de excepciones.
+
+##### Issue #3:
+
+En los métodos bind y connect ya no se lanza una excepción cuando fallan, sino que se imprime el error y se continua con el resultado siguiente. Si luego de recorrer todos los resultados no estoy conectado lanzo una excepción.
+
+##### Issue #4:
+
+Se implemento un método *listen* en la clase Socket para encapsular.
+
+##### Issue #6:
+
+Se cambió la verificación de comandos para que tome al 0 como un comando válido ya que entra en 2 bytes.
